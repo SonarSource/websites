@@ -71,7 +71,7 @@ template = <<-TEMPLATE
     <% accounts_by_image.keys.each_slice(ROW_SIZE).to_a.each do |row| %>
     <tr style="height: 90px;">
       <% row.each do |image| %>
-        <td align="center" valign=  "middle"><img title="<%= accounts_by_image[image].map(&:name).join(', ') -%>" src="<%= images_url -%><%= image -%>" /></td>
+        <td align="center" valign="middle"><img title="<%= accounts_by_image[image].map(&:name).join(', ') -%>" src="<%= images_url -%><%= image -%>" /></td>
       <% end %>
       <% for i in row.size...ROW_SIZE do %>
         <td align="center" valign="middle"></td>
