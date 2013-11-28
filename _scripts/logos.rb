@@ -23,11 +23,11 @@ class Account
   def initialize(id, name, image)
     @id = id
     @name = name
-    @image = image
+    @image = (image && image.size>0 && image != 'none') ? image : nil
   end
 
   def image?
-    @image.size>0
+    @image != nil
   end
 end
 
