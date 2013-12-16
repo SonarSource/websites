@@ -1,6 +1,6 @@
 require 'erb'
 require 'optparse'
-
+require 'csv'
 
 # Read options
 options = {}
@@ -33,18 +33,15 @@ end
 
 # Load accounts. Remove the first line (titles)
 accounts = []
-File.open('logos.csv', 'r').readlines[1..-1].each do |line|
-  if line && !line.strip.empty?
-    parts = line.split(';')
-    account_id = parts[0].gsub('"', '').strip
-    account_name = parts[1].gsub('"', '').strip
-    image = parts[2].gsub('"', '').strip
-    account = Account.new(account_id, account_name, image)
-    accounts << account
-    if account.image?  
-      # raise an exception if the image does not exist
-      File.open("../images/#{account.image}", 'r')
-    end
+CSV.foreach("logos.csv") do |row|
+  account_id = row[0].gsub('"', '').strip
+  account_name = row[1].gsub('"', '').strip
+  image = row[2].gsub('"', '').strip
+  account = Account.new(account_id, account_name, image)
+  accounts << account
+  if account.image?  
+    # raise an exception if the image does not exist
+    File.open("../images/#{account.image}", 'r')
   end
 end
 accounts_by_image = accounts.select{|a| a.image?}.group_by(&:image)||[]
