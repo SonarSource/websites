@@ -29,10 +29,15 @@ class Account
   def image?
     @image != nil
   end
+
+  def to_s
+    "#{@name}: #{image}"
+  end
 end
 
 # Load accounts. Remove the first line (titles)
 accounts = []
+missings = []
 CSV.foreach("logos.csv") do |row|
   account_id = row[0].gsub('"', '').strip
   account_name = row[1].gsub('"', '').strip
@@ -40,10 +45,15 @@ CSV.foreach("logos.csv") do |row|
   account = Account.new(account_id, account_name, image)
   accounts << account
   if account.image?  
-    # raise an exception if the image does not exist
-    File.open("../images/#{account.image}", 'r')
+    missings << account unless File.exist?("../images/#{account.image}")
   end
 end
+
+unless missings.empty?
+  missings.each { |missing| puts "Missing: #{missing}" }
+  raise "Missing images"
+end
+
 accounts_by_image = accounts.select{|a| a.image?}.group_by(&:image)||[]
 
 # Log synthesis
