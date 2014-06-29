@@ -6,11 +6,11 @@ require 'csv'
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: logos.rb [options]"
-  opts.on('-u', '--url URL', 'Target URL to directory of images, for example images/ or http://sonarsource.com/images/. Must end with slash.') do |v| 
+  opts.on('-u', '--url URL', 'Target URL to directory of images, for example images/ or http://sonarsource.com/images/. Must end with slash.') do |v|
   	options[:url] = v
   end
-  opts.on('-o', '--output FILE', 'Path to generated HTML file') do |v| 
-  	options[:output] = v 
+  opts.on('-o', '--output FILE', 'Path to generated HTML file') do |v|
+  	options[:output] = v
   end
 end.parse!
 images_url = options[:url] || 'images/'
@@ -38,13 +38,13 @@ end
 # Load accounts. Remove the first line (titles)
 accounts = []
 missings = []
-CSV.foreach("logos.csv") do |row|
+CSV.foreach("logos.csv", :force_quotes => true, :col_sep => ',', :quote_char => '"') do |row|
   account_id = row[0].gsub('"', '').strip
   account_name = row[1].gsub('"', '').strip
   image = row[2].gsub('"', '').strip
   account = Account.new(account_id, account_name, image)
   accounts << account
-  if account.image?  
+  if account.image?
     missings << account unless File.exist?("../images/#{account.image}")
   end
 end
@@ -91,8 +91,8 @@ TEMPLATE
 
 
 # Generate HTML
-File.open(path, 'w') do |output|  
+File.open(path, 'w') do |output|
   output.puts ERB.new(template, nil, '-').result(binding)
-end 
+end
 
 puts "#{path} generated"
