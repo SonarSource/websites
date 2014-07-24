@@ -18,12 +18,13 @@ path = options[:output] || '../logos.html'
 
 
 class Account
-  attr_reader :id, :name, :image
+  attr_reader :id, :name, :image, :url
 
-  def initialize(id, name, image)
+  def initialize(id, name, image, url)
     @id = id
     @name = name
     @image = (image && image.size>0 && image != 'none') ? image : nil
+    @url = url
   end
 
   def image?
@@ -42,7 +43,8 @@ CSV.foreach("logos.csv", :force_quotes => true, :col_sep => ',', :quote_char => 
   account_id = row[0].gsub('"', '').strip
   account_name = row[1].gsub('"', '').strip
   image = row[2].gsub('"', '').strip
-  account = Account.new(account_id, account_name, image)
+  url = row[3].gsub('"', '').strip
+  account = Account.new(account_id, account_name, image, url)
   accounts << account
   if account.image?
     missings << account unless File.exist?("../images/#{account.image}")
@@ -50,7 +52,7 @@ CSV.foreach("logos.csv", :force_quotes => true, :col_sep => ',', :quote_char => 
 end
 
 unless missings.empty?
-  missings.each { |missing| puts "Missing: #{missing}" }
+  missings.each { |missing| puts "Missing #{missing}. See #{missing.url}" }
   raise "Missing images"
 end
 
